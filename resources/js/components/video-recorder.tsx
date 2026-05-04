@@ -216,10 +216,10 @@ export default function VideoRecorder({ onRecordingComplete, onClose }: { onReco
                 <Webcam
                     audio={false}
                     ref={webcamRef}
-                    mirrored={false}
+                    mirrored={true}
                     className="absolute inset-0 h-full w-full object-cover"
                     videoConstraints={{
-                        facingMode: { ideal: "environment" },
+                        facingMode: "user",
                         width: { ideal: 1080 },
                         height: { ideal: 1920 },
                     }}
