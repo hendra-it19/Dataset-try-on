@@ -225,26 +225,30 @@ export default function VideoRecorder({ onRecordingComplete, onClose }: { onReco
 
                 {/* Bounding Box Overlay */}
                 <div className="pointer-events-none absolute inset-0 z-10 flex flex-col">
-                    <div className="flex-[0.5] bg-black/50" />
+                    <div className="flex-[0.3] bg-black/50" />
                     <div className="flex justify-between">
                         <div className="w-8 bg-black/50 sm:w-16" />
-                        <div className="relative aspect-9/16 w-72 border-2 border-dashed border-green-500">
-                            {/* Batas Kepala Line */}
-                            <div className="absolute left-0 top-[5%] w-full border-t border-dashed border-green-500/50">
-                                <span className="absolute -top-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold text-green-500 drop-shadow-md">
-                                    Batas Kepala
+                        <div className="relative flex aspect-9/16 w-72 flex-col border-2 border-dashed border-green-500">
+                            {/* Top padding area with label inside */}
+                            <div className="flex items-center justify-center border-b border-dashed border-green-500/60 bg-black/40 py-2">
+                                <span className="text-xs font-bold tracking-wide text-green-400 drop-shadow-md">
+                                    ▼ Batas Kepala ▼
                                 </span>
                             </div>
-                            {/* Batas Bawah Kaki Line — positioned near the very bottom */}
-                            <div className="absolute bottom-[3%] left-0 w-full border-t border-dashed border-green-500/50">
-                                <span className="absolute -bottom-5 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs font-bold text-green-500 drop-shadow-md">
-                                    Batas Bawah Kaki
+
+                            {/* Main body area */}
+                            <div className="flex-1" />
+
+                            {/* Bottom padding area with label inside */}
+                            <div className="flex items-center justify-center border-t border-dashed border-green-500/60 bg-black/40 py-2">
+                                <span className="text-xs font-bold tracking-wide text-green-400 drop-shadow-md">
+                                    ▲ Batas Bawah Kaki ▲
                                 </span>
                             </div>
                         </div>
                         <div className="w-8 bg-black/50 sm:w-16" />
                     </div>
-                    <div className="flex-[0.5] bg-black/50" />
+                    <div className="flex-[0.3] bg-black/50" />
                 </div>
 
                 {/* Camera placement info banner */}
