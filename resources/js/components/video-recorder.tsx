@@ -196,15 +196,15 @@ export default function VideoRecorder({ onRecordingComplete, onClose }: { onReco
     };
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-sm">
-            <div className="relative h-full w-full max-w-md overflow-hidden bg-black shadow-2xl sm:h-[85vh] sm:rounded-2xl sm:border sm:border-zinc-800">
+        <div className="fixed inset-0 z-50 bg-black">
+            <div className="relative h-full w-full overflow-hidden">
 
                 {/* Close Button */}
                 {(status === 'idle' || status === 'guide') && (
                     <Button
                         variant="ghost"
                         size="icon"
-                        className="absolute right-4 top-4 z-50 rounded-full bg-black/50 text-white hover:bg-black/80"
+                        className="absolute right-3 top-3 z-50 rounded-full bg-black/50 text-white hover:bg-black/80"
                         onClick={onClose}
                     >
                         <X className="size-6" />
@@ -212,43 +212,52 @@ export default function VideoRecorder({ onRecordingComplete, onClose }: { onReco
                     </Button>
                 )}
 
-                {/* Webcam Stream */}
+                {/* Webcam Stream — non-mirrored, using rear camera for natural left/right */}
                 <Webcam
                     audio={false}
                     ref={webcamRef}
-                    className="h-full w-full object-cover"
+                    mirrored={false}
+                    className="absolute inset-0 h-full w-full object-cover"
                     videoConstraints={{
-                        facingMode: "user",
-                        aspectRatio: 9 / 16
+                        facingMode: { ideal: "environment" },
+                        width: { ideal: 1080 },
+                        height: { ideal: 1920 },
                     }}
                 />
 
-                {/* Bounding Box Overlay */}
-                <div className="pointer-events-none absolute inset-0 z-10 flex flex-col">
-                    <div className="flex-[0.3] bg-black/50" />
-                    <div className="flex justify-between">
-                        <div className="w-8 bg-black/50 sm:w-16" />
-                        <div className="relative flex aspect-9/16 w-72 flex-col border-2 border-dashed border-green-500">
-                            {/* Top padding area with label inside */}
-                            <div className="flex items-center justify-center border-b border-dashed border-green-500/60 bg-black/40 py-2">
-                                <span className="text-xs font-bold tracking-wide text-green-400 drop-shadow-md">
-                                    ▼ Batas Kepala ▼
-                                </span>
-                            </div>
+                {/* Bounding Box Overlay — absolute positioned to fill screen */}
+                <div className="pointer-events-none absolute inset-0 z-10">
+                    {/* Top dark area */}
+                    <div className="absolute left-0 right-0 top-0 h-[8%] bg-black/50" />
 
-                            {/* Main body area */}
-                            <div className="flex-1" />
+                    {/* Bottom dark area */}
+                    <div className="absolute bottom-0 left-0 right-0 h-[8%] bg-black/50" />
 
-                            {/* Bottom padding area with label inside */}
-                            <div className="flex items-center justify-center border-t border-dashed border-green-500/60 bg-black/40 py-2">
-                                <span className="text-xs font-bold tracking-wide text-green-400 drop-shadow-md">
-                                    ▲ Batas Bawah Kaki ▲
-                                </span>
-                            </div>
+                    {/* Left dark area */}
+                    <div className="absolute bottom-[8%] left-0 top-[8%] w-[10%] bg-black/50" />
+
+                    {/* Right dark area */}
+                    <div className="absolute bottom-[8%] right-0 top-[8%] w-[10%] bg-black/50" />
+
+                    {/* Bounding box border */}
+                    <div className="absolute bottom-[8%] left-[10%] right-[10%] top-[8%] flex flex-col border-2 border-dashed border-green-500">
+                        {/* Top padding area with label inside */}
+                        <div className="flex items-center justify-center border-b border-dashed border-green-500/60 bg-black/40 py-2">
+                            <span className="text-xs font-bold tracking-wide text-green-400 drop-shadow-md">
+                                ▼ Batas Kepala ▼
+                            </span>
                         </div>
-                        <div className="w-8 bg-black/50 sm:w-16" />
+
+                        {/* Main body area */}
+                        <div className="flex-1" />
+
+                        {/* Bottom padding area with label inside */}
+                        <div className="flex items-center justify-center border-t border-dashed border-green-500/60 bg-black/40 py-2">
+                            <span className="text-xs font-bold tracking-wide text-green-400 drop-shadow-md">
+                                ▲ Batas Bawah Kaki ▲
+                            </span>
+                        </div>
                     </div>
-                    <div className="flex-[0.3] bg-black/50" />
                 </div>
 
                 {/* Camera placement info banner */}
@@ -266,7 +275,7 @@ export default function VideoRecorder({ onRecordingComplete, onClose }: { onReco
                 )}
 
                 {/* Controls */}
-                <div className="absolute bottom-10 left-0 z-20 flex w-full justify-center">
+                <div className="absolute bottom-[2%] left-0 z-20 flex w-full justify-center">
                     {status === 'preparing' && (
                         <div className="flex flex-col items-center gap-2">
                             <div className="flex size-16 items-center justify-center rounded-full bg-yellow-500 text-2xl font-bold text-white shadow animate-bounce">
