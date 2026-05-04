@@ -1,5 +1,7 @@
-import { Head, Link, router, usePage } from '@inertiajs/react';
+import { Head, Link, useForm, usePage } from '@inertiajs/react';
+import { Check } from 'lucide-react';
 import { useState } from 'react';
+import { toast } from 'sonner';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
@@ -8,19 +10,76 @@ import { dashboard } from '@/routes';
 import { video as recordVideo } from '@/routes/record';
 import { link as afterLink } from '@/routes/video/after';
 
+function VideoAfterItem({ video, index }: { video: any; index: number }) {
+    const { data, setData, post, processing, recentlySuccessful, errors } = useForm({
+        product_link: video.product_link || '',
+    });
+
+    const [isEditing, setIsEditing] = useState(!video.product_link);
+
+    const submit = (e: React.FormEvent) => {
+        e.preventDefault();
+        post(afterLink(video.id).url, {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success('Link produk berhasil disimpan.');
+                setIsEditing(false);
+            },
+            onError: (errs) => {
+                toast.error(errs.product_link || 'Gagal menyimpan link. Pastikan link valid.');
+            }
+        });
+    };
+
+    return (
+        <div className="space-y-3 rounded-lg border p-4">
+            <div className="font-medium">Video {index + 1}</div>
+            <video src={`/videos/${video.video_path}`} controls className="w-full rounded-lg" />
+            <form className="space-y-2" onSubmit={submit}>
+                <Label>Link Belanja Kemeja</Label>
+                <div className="flex gap-2">
+                    <Input
+                        type="url"
+                        value={data.product_link}
+                        onChange={(e) => setData('product_link', e.target.value)}
+                        placeholder="https://..."
+                        required
+                        disabled={!isEditing}
+                    />
+                    {isEditing ? (
+                        <Button type="submit" disabled={processing}>
+                            {recentlySuccessful ? (
+                                <><Check className="size-4 mr-1" /> Tersimpan</>
+                            ) : processing ? (
+                                'Menyimpan...'
+                            ) : video.product_link ? (
+                                'Update'
+                            ) : (
+                                'Simpan'
+                            )}
+                        </Button>
+                    ) : (
+                        <Button
+                            type="button"
+                            variant="secondary"
+                            onClick={(e) => {
+                                e.preventDefault();
+                                setIsEditing(true);
+                            }}
+                        >
+                            Edit
+                        </Button>
+                    )}
+                </div>
+                {errors.product_link && <div className="text-sm text-red-500">{errors.product_link}</div>}
+            </form>
+        </div>
+    );
+}
+
 export default function Dashboard() {
     const { auth } = usePage().props as unknown as { auth: { user: any } };
     const user = auth.user;
-    
-    const [processingId, setProcessingId] = useState<number | null>(null);
-
-    const updateLink = (videoId: number, linkUrl: string) => {
-        setProcessingId(videoId);
-        router.post(afterLink(videoId).url, { product_link: linkUrl }, {
-            preserveScroll: true,
-            onFinish: () => setProcessingId(null)
-        });
-    };
 
     return (
         <>
@@ -91,29 +150,7 @@ export default function Dashboard() {
                             <div className="space-y-4">
                                 {user.videos_after && user.videos_after.length > 0 ? (
                                     user.videos_after.map((video: any, index: number) => (
-                                        <div key={video.id} className="space-y-3 rounded-lg border p-4">
-                                            <div className="font-medium">Video {index + 1}</div>
-                                            <video src={`/videos/${video.video_path}`} controls className="w-full rounded-lg" />
-                                            <form 
-                                                className="space-y-2"
-                                                onSubmit={(e) => {
-                                                    e.preventDefault();
-                                                    const formData = new FormData(e.currentTarget);
-                                                    updateLink(video.id, formData.get('product_link') as string);
-                                                }}
-                                            >
-                                                <Label>Link Belanja Kemeja</Label>
-                                                <div className="flex gap-2">
-                                                    <Input 
-                                                        name="product_link"
-                                                        defaultValue={video.product_link || ''} 
-                                                        placeholder="https://..." 
-                                                        required 
-                                                    />
-                                                    <Button type="submit" disabled={processingId === video.id}>Simpan</Button>
-                                                </div>
-                                            </form>
-                                        </div>
+                                        <VideoAfterItem key={video.id} video={video} index={index} />
                                     ))
                                 ) : (
                                     <div className="text-center text-sm text-muted-foreground">

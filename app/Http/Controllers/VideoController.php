@@ -17,7 +17,8 @@ class VideoController extends Controller
         ]);
 
         $file = $request->file('video');
-        $filename = 'before_'.$request->user()->id.'_'.time().'.'.$file->getClientOriginalExtension();
+        $extension = $file->getClientOriginalExtension() ?: ($file->guessExtension() ?: 'webm');
+        $filename = 'before_'.$request->user()->id.'_'.time().'.'.$extension;
 
         try {
             DB::beginTransaction();
@@ -37,6 +38,7 @@ class VideoController extends Controller
             if (isset($path)) {
                 Storage::disk('public_videos')->delete($path);
             }
+
             return back()->withErrors(['video' => 'Gagal menyimpan video ke database. Silakan coba lagi.']);
         }
     }
@@ -48,7 +50,8 @@ class VideoController extends Controller
         ]);
 
         $file = $request->file('video');
-        $filename = 'after_'.$request->user()->id.'_'.time().'.'.$file->getClientOriginalExtension();
+        $extension = $file->getClientOriginalExtension() ?: ($file->guessExtension() ?: 'webm');
+        $filename = 'after_'.$request->user()->id.'_'.time().'.'.$extension;
 
         try {
             DB::beginTransaction();
@@ -67,6 +70,7 @@ class VideoController extends Controller
             if (isset($path)) {
                 Storage::disk('public_videos')->delete($path);
             }
+
             return back()->withErrors(['video' => 'Gagal menyimpan video ke database. Silakan coba lagi.']);
         }
     }
@@ -78,13 +82,13 @@ class VideoController extends Controller
         }
 
         $request->validate([
-            'product_link' => 'required|url',
+            'product_link' => 'required|url|max:2048',
         ]);
 
         $video->update([
             'product_link' => $request->product_link,
         ]);
 
-        return redirect()->back()->with('success', 'Link produk berhasil disimpan.');
+        return back();
     }
 }
